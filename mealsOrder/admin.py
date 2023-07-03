@@ -13,5 +13,5 @@ admin.site.register(Orders,OrdersAdmin)
 
 
 class MealsItemsAdmin(admin.ModelAdmin):
-    list_display = ['name','description','price']
+    list_display = ['name','description','price','meals_image']
 admin.site.register(MealsItems,MealsItemsAdmin)

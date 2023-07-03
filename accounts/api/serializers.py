@@ -1,29 +1,20 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers, validators
+from django.contrib.auth import get_user_model
+from accounts.models import CustomUser
 
+User = get_user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("username", "password")
+    password = serializers.CharField(write_only=True, style={'input_type': 'password'})
 
-        # defining email and password properties
-        extra_kwargs = {
-            "password": {"write_only": True},
-            # "email": {
-            #     "required": True,
-            #     "allow_blank": False,
-            #     "validators": [
-            #         validators.UniqueValidator(
-            #             User.objects.all(), "A user with email already exists."
-            #         )
-            #     ],
-            # },
-        }
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'password')
 
     def create(self, validated_data):
-        username = validated_data.get("username")
-        password = validated_data.get("password")
-
-        user = User.objects.create_user(username=username, password=password)
+        password = validated_data.pop('password')
+        user = self.Meta.model(**validated_data)
+        user.set_password(password)
+        user.save()
         return user
